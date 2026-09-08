@@ -5,11 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.project.ianime.HomeActivity
 import com.project.ianime.api.error.ErrorType
 import com.project.ianime.databinding.FragmentGalleryBinding
 import com.project.ianime.root.BaseFragment
@@ -17,16 +16,18 @@ import com.project.ianime.screens.gallery.adapter.AnimeItemAdapter
 import com.project.ianime.screens.stateholder.AnimeUiState
 import com.project.ianime.screens.viewanime.AnimeDetailFragment
 import com.project.ianime.viewmodels.AnimeViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Gallery screen which shows all the anime in preview mode
  */
+@AndroidEntryPoint
 class GalleryFragment : BaseFragment() {
 
     private var _binding: FragmentGalleryBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var animeViewModel: AnimeViewModel
+    private val animeViewModel: AnimeViewModel by activityViewModels()
 
     lateinit var animeCardList: RecyclerView
     lateinit var refreshAction: SwipeRefreshLayout
@@ -38,8 +39,6 @@ class GalleryFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentGalleryBinding.inflate(inflater, container, false)
-
-        animeViewModel = ViewModelProvider(requireActivity(), (activity as HomeActivity).animeViewModelFactory)[AnimeViewModel::class.java]
 
         // set up UI elements
         animeCardList = binding.animeListContainer
