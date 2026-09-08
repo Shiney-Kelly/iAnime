@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -36,8 +37,6 @@ android {
 
     buildFeatures {
         viewBinding true
-        // Declared explicitly rather than via the (AGP 9-removed)
-        // android.defaults.buildfeatures.buildconfig property.
         buildConfig true
         compose true
     }
@@ -57,9 +56,10 @@ dependencies {
     implementation libs.androidx.constraintlayout
     implementation libs.androidx.recyclerview
     implementation libs.androidx.swiperefreshlayout
+    implementation libs.androidx.fragment.ktx
     implementation libs.bundles.lifecycle
 
-    // Compose — the BOM pins every compose artifact's version
+    // Compose
     implementation platform(libs.androidx.compose.bom)
     implementation libs.bundles.compose
     debugImplementation libs.androidx.compose.ui.tooling
@@ -70,12 +70,11 @@ dependencies {
     // RxJava
     implementation libs.bundles.rx
 
-    // Dagger — replaced by Hilt in the next phase
-    implementation libs.dagger
-    ksp libs.dagger.compiler
+    // Hilt
+    implementation libs.hilt.android
+    ksp libs.hilt.compiler
 
-    // Images — Picasso for the existing View code, Coil for Compose.
-    // Both are here until ImageUtils is migrated off Picasso.
+    // Images
     implementation libs.picasso
     implementation libs.bundles.coil
 

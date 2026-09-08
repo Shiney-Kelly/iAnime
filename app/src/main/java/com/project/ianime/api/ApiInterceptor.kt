@@ -4,8 +4,9 @@ import com.project.ianime.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.util.*
+import javax.inject.Inject
 
-class ApiInterceptor : Interceptor {
+class ApiInterceptor @Inject constructor() : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val acceptLanguage = Locale.getDefault().language

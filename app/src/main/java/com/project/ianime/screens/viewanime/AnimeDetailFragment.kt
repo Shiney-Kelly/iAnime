@@ -10,8 +10,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
-import androidx.lifecycle.ViewModelProvider
-import com.project.ianime.HomeActivity
+import androidx.fragment.app.activityViewModels
 import com.project.ianime.R
 import com.project.ianime.api.model.AnimeApiModel
 import com.project.ianime.databinding.FragmentAnimeBinding
@@ -19,10 +18,12 @@ import com.project.ianime.root.BaseFragment
 import com.project.ianime.screens.manageanime.EditAnimeFragment
 import com.project.ianime.utils.image.ImageUtils
 import com.project.ianime.viewmodels.AnimeViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Anime detail screen which shows a specific anime with all the details
  */
+@AndroidEntryPoint
 class AnimeDetailFragment : BaseFragment() {
     private var _binding: FragmentAnimeBinding? = null
     private val binding get() = _binding!!
@@ -31,7 +32,7 @@ class AnimeDetailFragment : BaseFragment() {
         ImageUtils()
     }
 
-    private lateinit var animeViewModel: AnimeViewModel
+    private val animeViewModel: AnimeViewModel by activityViewModels()
 
     private lateinit var animeTargetId: String
 
@@ -63,7 +64,6 @@ class AnimeDetailFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAnimeBinding.inflate(inflater, container, false)
-        animeViewModel = ViewModelProvider(requireActivity(), (activity as HomeActivity).animeViewModelFactory)[AnimeViewModel::class.java]
 
         // set up UI elements
         toolbar = binding.topAppBar.toolBar

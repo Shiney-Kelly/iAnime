@@ -7,18 +7,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.project.ianime.api.error.*
 import com.project.ianime.api.model.AnimeApiModel
+import com.project.ianime.di.qualifier.IoDispatcher
 import com.project.ianime.repository.AnimeDataRepository
 import com.project.ianime.screens.stateholder.AnimeUiState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class AnimeViewModel @Inject constructor(private val repository: AnimeDataRepository) :
-    ViewModel() {
+@HiltViewModel
+class AnimeViewModel @Inject constructor(
+    private val repository: AnimeDataRepository,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+) : ViewModel() {
 
     private val _animeList = MutableLiveData<List<AnimeApiModel>>()
     val animeList: LiveData<List<AnimeApiModel>> = _animeList
@@ -38,7 +43,7 @@ class AnimeViewModel @Inject constructor(private val repository: AnimeDataReposi
      */
     fun getAnimeList(refresh: Boolean = false) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
+            withContext(ioDispatcher) {
                 // if refresh or database is empty
                 if (refresh || repository.isDatabaseEmpty()) {
                     loadAnimeListFromNetwork()
@@ -65,12 +70,12 @@ class AnimeViewModel @Inject constructor(private val repository: AnimeDataReposi
                 } else {
                     viewModelScope.launch {
                         // clear existing data from the database
-                        withContext(Dispatchers.IO) {
+                        withContext(ioDispatcher) {
                             repository.clearOfflineAnimeList()
                         }
 
                         // insert new data into the database
-                        withContext(Dispatchers.IO) {
+                        withContext(ioDispatcher) {
                             animeItems.forEach { anime ->
                                 val eachAnimeEntity = anime.mapToAnimeEntity()
                                 repository.insertAnimeIntoDatabase(eachAnimeEntity)
@@ -95,7 +100,7 @@ class AnimeViewModel @Inject constructor(private val repository: AnimeDataReposi
     private fun loadAnimeListFromLocalStorage() {
         viewModelScope.launch {
             try {
-                val animeEntityList = withContext(Dispatchers.IO) {
+                val animeEntityList = withContext(ioDispatcher) {
                     // This method should fetch the data without observing changes
                     repository.getOfflineAnimeListSynchronously()
                 }
