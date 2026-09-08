@@ -1,18 +1,19 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-    id 'kotlin-kapt'
-    id("kotlin-android")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
 }
 
 android {
     namespace 'com.project.ianime'
-    compileSdk = 34
+    compileSdk libs.versions.compileSdk.get().toInteger()
 
     defaultConfig {
         applicationId "com.project.ianime"
-        minSdk 24
-        targetSdk 33
+        minSdk libs.versions.minSdk.get().toInteger()
+        targetSdk libs.versions.targetSdk.get().toInteger()
         versionCode 1
         versionName "1.0"
         buildConfigField("String", "API_BASE_PATH", apiBasePath)
@@ -27,62 +28,66 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = '1.8'
-        freeCompilerArgs += [
-                "-Xjvm-default=all",
-        ]
-    }
-    viewBinding{
-        enabled = true
+
+    buildFeatures {
+        viewBinding true
+        // Declared explicitly rather than via the (AGP 9-removed)
+        // android.defaults.buildfeatures.buildconfig property.
+        buildConfig true
+        compose true
     }
 }
 
-def retrofit_version = "2.9.0"
-def dagger_version= "2.41"
-def picasso_version = "2.71828"
-def room_version = "2.6.1"
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_17
+    }
+}
 
 dependencies {
+    // AndroidX / Material
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.google.material
+    implementation libs.androidx.constraintlayout
+    implementation libs.androidx.recyclerview
+    implementation libs.androidx.swiperefreshlayout
+    implementation libs.bundles.lifecycle
 
-    implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    // Compose — the BOM pins every compose artifact's version
+    implementation platform(libs.androidx.compose.bom)
+    implementation libs.bundles.compose
+    debugImplementation libs.androidx.compose.ui.tooling
 
-    // Retrofit
-    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
-    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
-    implementation("com.squareup.retrofit2:adapter-rxjava3:$retrofit_version")
+    // Network
+    implementation libs.bundles.retrofit
 
     // RxJava
-    implementation 'io.reactivex.rxjava3:rxandroid:3.0.2'
-    implementation 'io.reactivex.rxjava3:rxjava:3.1.5'
+    implementation libs.bundles.rx
 
-    // Dagger dependency injection
-    implementation "com.google.dagger:dagger:$dagger_version"
-    kapt "com.google.dagger:dagger-compiler:$dagger_version"
-    kapt "org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.4.2"
+    // Dagger — replaced by Hilt in the next phase
+    implementation libs.dagger
+    ksp libs.dagger.compiler
 
-    // Picasso
-    implementation "com.squareup.picasso:picasso:$picasso_version"
+    // Images — Picasso for the existing View code, Coil for Compose.
+    // Both are here until ImageUtils is migrated off Picasso.
+    implementation libs.picasso
+    implementation libs.bundles.coil
 
-    // RoomDB
-    implementation("androidx.room:room-runtime:$room_version")
-    implementation("androidx.room:room-ktx:$room_version")
-    annotationProcessor("androidx.room:room-compiler:$room_version")
-    kapt("androidx.room:room-compiler:$room_version")
+    // Room
+    implementation libs.bundles.room
+    ksp libs.room.compiler
 
-    // Swipe refresh layout
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+    // Test
+    testImplementation libs.junit
+    androidTestImplementation libs.androidx.test.junit
+    androidTestImplementation libs.androidx.test.espresso
+    androidTestImplementation platform(libs.androidx.compose.bom)
+    androidTestImplementation libs.androidx.compose.ui.test.junit4
+    debugImplementation libs.androidx.compose.ui.test.manifest
 }

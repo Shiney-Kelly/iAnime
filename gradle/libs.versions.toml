@@ -1,0 +1,155 @@
+[versions]
+# --- Build toolchain -------------------------------------------------------
+# AGP is boxed in from both sides:
+#   floor   - current AndroidX (core-ktx 1.19, compose 1.12, ...) publishes AAR
+#             metadata requiring AGP >= 9.1.0 and compileSdk >= 37, so an 8.x
+#             build cannot resolve them at all.
+#   ceiling - Android Studio 2026.1 (AI-261) refuses to sync anything above
+#             9.3.1. The CLI builds fine on 9.4.0; the IDE is the constraint.
+# Raise this only together with an Android Studio update.
+agp = "9.3.1"
+kotlin = "2.4.20"
+ksp = "2.3.11"
+
+# --- SDK levels ------------------------------------------------------------
+compileSdk = "37"
+targetSdk = "37"
+minSdk = "24"
+
+# --- AndroidX / Google -----------------------------------------------------
+coreKtx = "1.19.0"
+appcompat = "1.8.0"
+material = "1.14.0"
+constraintlayout = "2.2.2"
+lifecycle = "2.11.0"
+recyclerview = "1.4.0"
+swiperefreshlayout = "1.2.0"
+fragmentKtx = "1.9.0"
+activityCompose = "1.13.0"
+
+# --- Compose ---------------------------------------------------------------
+# Single BOM pins every compose artifact; individual libs are declared without
+# a version on purpose so the BOM stays the one place to bump them.
+composeBom = "2026.08.00"
+
+# --- Dependency injection --------------------------------------------------
+# Dagger today, Hilt in the next phase. Same coordinate family, same version.
+dagger = "2.60.1"
+hiltNavigationCompose = "1.4.0"
+
+# --- Data / network --------------------------------------------------------
+room = "2.8.4"
+retrofit = "2.11.0"
+okhttp = "4.12.0"
+rxjava = "3.1.5"
+rxandroid = "3.0.2"
+picasso = "2.71828"
+# Coil is added ahead of the image-loading refactor; Picasso still ships until
+# ImageUtils is migrated, so both are present on purpose for now.
+coil = "3.6.2"
+
+# --- Test ------------------------------------------------------------------
+junit = "4.13.2"
+androidxJunit = "1.3.0"
+espresso = "3.7.0"
+
+
+[libraries]
+# --- AndroidX --------------------------------------------------------------
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
+androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
+androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
+androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
+google-material = { module = "com.google.android.material:material", version.ref = "material" }
+
+# --- Lifecycle -------------------------------------------------------------
+androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+
+# --- Compose (versions come from the BOM) ----------------------------------
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
+androidx-compose-ui = { module = "androidx.compose.ui:ui" }
+androidx-compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
+androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
+androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
+# observeAsState() — needed to read the existing LiveData-based ViewModels
+# from Composables during the view-to-compose migration.
+androidx-compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+
+# --- Dependency injection --------------------------------------------------
+dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
+dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
+# Wired up in the Hilt phase; declared here so the version lives in one place.
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "dagger" }
+hilt-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "dagger" }
+hilt-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "dagger" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+
+# --- Room ------------------------------------------------------------------
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+
+# --- Network ---------------------------------------------------------------
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+retrofit-adapter-rxjava3 = { module = "com.squareup.retrofit2:adapter-rxjava3", version.ref = "retrofit" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+
+# --- Rx / images -----------------------------------------------------------
+rxjava = { module = "io.reactivex.rxjava3:rxjava", version.ref = "rxjava" }
+rxandroid = { module = "io.reactivex.rxjava3:rxandroid", version.ref = "rxandroid" }
+picasso = { module = "com.squareup.picasso:picasso", version.ref = "picasso" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+# Coil 3 ships no network fetcher by default — without this, remote URLs fail
+# to load with no error. Uses the OkHttp already on the classpath.
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+
+# --- Test ------------------------------------------------------------------
+junit = { module = "junit:junit", version.ref = "junit" }
+androidx-test-junit = { module = "androidx.test.ext:junit", version.ref = "androidxJunit" }
+androidx-test-espresso = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
+
+
+[bundles]
+# Bundles keep app/build.gradle short: add a library to the bundle here and
+# every module that uses the bundle picks it up.
+retrofit = ["retrofit", "retrofit-converter-gson", "retrofit-adapter-rxjava3", "okhttp"]
+room = ["room-runtime", "room-ktx"]
+rx = ["rxjava", "rxandroid"]
+coil = ["coil-compose", "coil-network-okhttp"]
+lifecycle = [
+    "androidx-lifecycle-livedata-ktx",
+    "androidx-lifecycle-viewmodel-ktx",
+    "androidx-lifecycle-runtime-ktx",
+]
+compose = [
+    "androidx-compose-ui",
+    "androidx-compose-ui-graphics",
+    "androidx-compose-ui-tooling-preview",
+    "androidx-compose-material3",
+    "androidx-compose-runtime-livedata",
+    "androidx-activity-compose",
+    "androidx-lifecycle-runtime-compose",
+    "androidx-lifecycle-viewmodel-compose",
+]
+
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+# No kotlin-android plugin — AGP 9 applies Kotlin itself. The `kotlin` version
+# below still governs the toolchain (stdlib resolves to it via this plugin).
+# Since Kotlin 2.0 the Compose compiler ships with Kotlin, so it shares its version.
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger" }
