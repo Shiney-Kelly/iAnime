@@ -63,7 +63,7 @@ class GalleryFragment : BaseFragment() {
 
         // set up refresh listener
         refreshAction.setOnRefreshListener {
-            animeViewModel.getAnimeList(true)
+            animeViewModel.getAnimeList()
         }
     }
 

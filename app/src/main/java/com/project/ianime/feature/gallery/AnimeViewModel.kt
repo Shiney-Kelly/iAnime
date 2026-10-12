@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.project.ianime.core.data.remote.error.BadRequestException
 import com.project.ianime.core.data.remote.error.ConnectionException
 import com.project.ianime.core.data.remote.error.ErrorType
@@ -12,49 +11,32 @@ import com.project.ianime.core.data.remote.error.NotFoundException
 import com.project.ianime.core.data.remote.error.UnauthorizedException
 import com.project.ianime.core.data.remote.dto.AnimeApiModel
 import com.project.ianime.core.data.repository.AnimeRepository
-import com.project.ianime.core.di.qualifier.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class AnimeViewModel @Inject constructor(
-    private val repository: AnimeRepository,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+    private val repository: AnimeRepository
 ) : ViewModel() {
 
     private val _animeList = MutableLiveData<List<AnimeApiModel>>()
     val animeList: LiveData<List<AnimeApiModel>> = _animeList
 
     var animeUiState = MutableLiveData<AnimeUiState>()
-    private var animeDetailData: AnimeApiModel? = null
 
     private val viewScopeSubscriptionTracker = CompositeDisposable()
 
     init {
-        // initially load data from local storage when app restarts
         getAnimeList()
     }
 
     /**
-     * load entire anime list with refresh control
+     * load entire anime list
      */
-    fun getAnimeList(refresh: Boolean = false) {
-        viewModelScope.launch {
-            withContext(ioDispatcher) {
-                // if refresh or database is empty
-                if (refresh || repository.isDatabaseEmpty()) {
-                    loadAnimeListFromNetwork()
-                } else {
-                    loadAnimeListFromLocalStorage()
-                }
-            }
-        }
+    fun getAnimeList() {
+        loadAnimeListFromNetwork()
     }
 
     /**
@@ -71,21 +53,6 @@ class AnimeViewModel @Inject constructor(
                 if (animeItems.isEmpty()) {
                     animeUiState.postValue(AnimeUiState.Empty)
                 } else {
-                    viewModelScope.launch {
-                        // clear existing data from the database
-                        withContext(ioDispatcher) {
-                            repository.clearOfflineAnimeList()
-                        }
-
-                        // insert new data into the database
-                        withContext(ioDispatcher) {
-                            animeItems.forEach { anime ->
-                                val eachAnimeEntity = anime.mapToAnimeEntity()
-                                repository.insertAnimeIntoDatabase(eachAnimeEntity)
-                            }
-                        }
-                    }
-
                     animeUiState.postValue(AnimeUiState.Success)
                     // clear existing data and set new data
                     _animeList.postValue(emptyList())
@@ -98,45 +65,11 @@ class AnimeViewModel @Inject constructor(
     }
 
     /**
-     * get anime details from the local storage
-     */
-    private fun loadAnimeListFromLocalStorage() {
-        viewModelScope.launch {
-            try {
-                val animeEntityList = withContext(ioDispatcher) {
-                    // This method should fetch the data without observing changes
-                    repository.getOfflineAnimeListSynchronously()
-                }
-
-                if (animeEntityList.isEmpty()) {
-                    animeUiState.postValue(AnimeUiState.Empty)
-                } else {
-                    val animeOfflineData = mutableListOf<AnimeApiModel>()
-                    animeEntityList.forEach {
-                        animeOfflineData.add(it.mapToAnimeItem())
-                    }
-
-                    Log.d("AnimeViewModel", "Loaded from local storage: ${animeOfflineData.size} items")
-                    animeUiState.postValue(AnimeUiState.Success)
-                    _animeList.postValue(animeOfflineData)
-                }
-            } catch (e: Exception) {
-                animeUiState.postValue(AnimeUiState.Error(ErrorType.NOT_FOUND))
-                Log.e("AnimeViewModel", "Error loading data from local storage", e)
-            }
-        }
-    }
-
-    /**
      * get an anime with specific id
      * @param animeTargetId - anime target id
      */
     fun getAnimeById(animeTargetId: String, callback: (AnimeApiModel?) -> Unit) {
-        viewModelScope.launch {
-            val animeEntity = repository.getAnimeDetailsById(animeTargetId).firstOrNull()
-            animeDetailData = animeEntity?.mapToAnimeItem()
-            callback(animeDetailData)
-        }
+        callback(_animeList.value?.find { it.animeId == animeTargetId })
     }
 
     /**
