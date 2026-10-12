@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.project.ianime.R
 import com.project.ianime.core.data.remote.error.ErrorType
+import com.project.ianime.core.model.GalleryItem
 import com.project.ianime.databinding.FragmentGalleryBinding
 import com.project.ianime.core.ui.root.BaseFragment
 import com.project.ianime.feature.gallery.adapter.AnimeItemAdapter
@@ -36,6 +37,7 @@ class GalleryFragment : BaseFragment() {
     lateinit var animeCardList: RecyclerView
     lateinit var refreshAction: SwipeRefreshLayout
     lateinit var loadingBar: ProgressBar
+    private lateinit var animeCardAdapter: AnimeItemAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,20 +50,6 @@ class GalleryFragment : BaseFragment() {
         animeCardList = binding.animeListContainer
         refreshAction = binding.swipeContainer
         loadingBar = binding.loadingBar
-
-        // observe the change of the state of the screen to show empty, success and error screen
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                animeViewModel.uiState.collect { uiState ->
-                    when (uiState) {
-                        GalleryUiState.Loading -> showLoadingScreen()
-                        GalleryUiState.Empty -> showEmptyScreen()
-                        is GalleryUiState.Error -> showErrorScreen(uiState.errorType)
-                        is GalleryUiState.Loaded -> showAnimeGallery()
-                    }
-                }
-            }
-        }
 
         return binding.root
     }
@@ -76,6 +64,20 @@ class GalleryFragment : BaseFragment() {
 
         setUpRecyclerView()
 
+        // observe the change of the state of the screen to show empty, success and error screen
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                animeViewModel.uiState.collect { uiState ->
+                    when (uiState) {
+                        GalleryUiState.Loading -> showLoadingScreen()
+                        GalleryUiState.Empty -> showEmptyScreen()
+                        is GalleryUiState.Error -> showErrorScreen(uiState.errorType)
+                        is GalleryUiState.Loaded -> showAnimeGallery(uiState.animeList)
+                    }
+                }
+            }
+        }
+
         // set up refresh listener
         refreshAction.setOnRefreshListener {
             animeViewModel.getAnimeList()
@@ -89,7 +91,8 @@ class GalleryFragment : BaseFragment() {
     /**
      * set recycler view and load gallery items
      */
-    private fun showAnimeGallery() {
+    private fun showAnimeGallery(animeList: List<GalleryItem>) {
+        animeCardAdapter.setAnimeList(animeList)
         // update UI state
         refreshAction.isRefreshing = false
         binding.errorContainer.root.visibility = View.GONE
@@ -101,7 +104,7 @@ class GalleryFragment : BaseFragment() {
     private fun setUpRecyclerView() {
         // set recycler view
         animeCardList.layoutManager = GridLayoutManager(requireContext(), 2)
-        val animeCardAdapter = AnimeItemAdapter {
+        animeCardAdapter = AnimeItemAdapter {
             // navigate to anime detail screen
             val bundle = Bundle().apply {
                 putString(ANIME_ID_PARAM, it)
@@ -111,11 +114,6 @@ class GalleryFragment : BaseFragment() {
             appNavigation.showFragmentReplaceTop(animeDetailFragment, baseContainerId)
         }
         animeCardList.adapter = animeCardAdapter
-
-        // observe any changes of data to update recycler view
-        animeViewModel.animeList.observe(viewLifecycleOwner) { animeList ->
-            animeCardAdapter.setAnimeList(animeList)
-        }
     }
 
     private fun showLoadingScreen(){

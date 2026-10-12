@@ -1,7 +1,5 @@
 package com.project.ianime.feature.gallery
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.project.ianime.core.data.remote.dto.AnimeApiModel
@@ -19,8 +17,7 @@ class AnimeViewModel @Inject constructor(
     private val repository: AnimeRepository
 ) : ViewModel() {
 
-    private val _animeList = MutableLiveData<List<AnimeApiModel>>()
-    val animeList: LiveData<List<AnimeApiModel>> = _animeList
+    private var rawAnimeList: List<AnimeApiModel> = emptyList()
 
     private val _uiState = MutableStateFlow<GalleryUiState>(GalleryUiState.Loading)
     val uiState = _uiState.asStateFlow()
@@ -46,6 +43,7 @@ class AnimeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val rawAnimeListData = repository.getAnimeListFromNetwork()
+                rawAnimeList = rawAnimeListData
                 if (rawAnimeListData.isEmpty()){
                     _uiState.value = GalleryUiState.Empty
                 } else {
@@ -66,6 +64,6 @@ class AnimeViewModel @Inject constructor(
      * @param animeTargetId - anime target id
      */
     fun getAnimeById(animeTargetId: String, callback: (AnimeApiModel?) -> Unit) {
-        callback(_animeList.value?.find { it.animeId == animeTargetId })
+        callback(rawAnimeList.find { it.animeId == animeTargetId })
     }
 }

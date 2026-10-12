@@ -28,12 +28,14 @@ data class AnimeApiModel(
         }
 
         return GalleryItem(
+            animeId = animeId,
             animeEnName = animeEnName,
             animeChName = animeChName,
             watchStatus = watchingStatus.mapToWatchStatus(),
             year = releaseYear.orEmpty(),
             rate = formattedRate,
-            genreList = genreList
+            genreList = genreList,
+            imageUrl = animeImageUrl
         )
     }
 
