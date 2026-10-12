@@ -9,7 +9,6 @@
     <!-- Anime Detail Screen -->
     <string name="intro_header_title">About</string>
     <string name="anime_type_title">Type: %1$s</string>
-    <string name="anime_country_title">Country: %1$s</string>
     <string name="anime_release_year_title">Published Year: %1$s</string>
     <string name="anime_status_title">Status: %1$s</string>
     <string name="maxim_header_title">Maxim</string>

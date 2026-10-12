@@ -41,7 +41,7 @@
             android:layout_marginBottom="@dimen/spacing_4dp"
             android:orientation="horizontal">
 
-            <com.project.ianime.widget.AnimeEditText
+            <com.project.ianime.core.ui.widget.AnimeEditText
                 android:id="@+id/manage_chinese_name"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="wrap_content"
@@ -55,9 +55,9 @@
                     android:id="@+id/customErrorEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
-            </com.project.ianime.widget.AnimeEditText>
+            </com.project.ianime.core.ui.widget.AnimeEditText>
 
-            <com.project.ianime.widget.AnimeEditText
+            <com.project.ianime.core.ui.widget.AnimeEditText
                 android:id="@+id/manage_english_name"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="wrap_content"
@@ -69,7 +69,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
-            </com.project.ianime.widget.AnimeEditText>
+            </com.project.ianime.core.ui.widget.AnimeEditText>
 
         </LinearLayout>
 
@@ -80,7 +80,7 @@
             android:layout_marginBottom="@dimen/spacing_4dp"
             android:orientation="horizontal">
 
-            <com.project.ianime.widget.AnimeEditText
+            <com.project.ianime.core.ui.widget.AnimeEditText
                 android:id="@+id/manage_rate"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="wrap_content"
@@ -93,9 +93,9 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
-            </com.project.ianime.widget.AnimeEditText>
+            </com.project.ianime.core.ui.widget.AnimeEditText>
 
-            <com.project.ianime.widget.AnimeEditText
+            <com.project.ianime.core.ui.widget.AnimeEditText
                 android:id="@+id/manage_year"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="wrap_content"
@@ -107,7 +107,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
-            </com.project.ianime.widget.AnimeEditText>
+            </com.project.ianime.core.ui.widget.AnimeEditText>
 
         </LinearLayout>
 
@@ -122,7 +122,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <com.project.ianime.widget.AnimeEditText
+                <com.project.ianime.core.ui.widget.AnimeEditText
                     android:id="@+id/manage_description"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="0dp"
@@ -138,9 +138,9 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
-                </com.project.ianime.widget.AnimeEditText>
+                </com.project.ianime.core.ui.widget.AnimeEditText>
 
-                <com.project.ianime.widget.AnimeEditText
+                <com.project.ianime.core.ui.widget.AnimeEditText
                     android:id="@+id/manage_country"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="0dp"
@@ -159,7 +159,7 @@
                         android:inputType="none"
                         app:simpleItems="@array/country_selector" />
 
-                </com.project.ianime.widget.AnimeEditText>
+                </com.project.ianime.core.ui.widget.AnimeEditText>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -171,7 +171,7 @@
             android:layout_marginTop="@dimen/spacing_4dp"
             android:orientation="horizontal">
 
-            <com.project.ianime.widget.AnimeEditText
+            <com.project.ianime.core.ui.widget.AnimeEditText
                 android:id="@+id/manage_type"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="wrap_content"
@@ -185,9 +185,9 @@
                     android:layout_height="wrap_content"
                     android:inputType="none"
                     app:simpleItems="@array/type_selector" />
-            </com.project.ianime.widget.AnimeEditText>
+            </com.project.ianime.core.ui.widget.AnimeEditText>
 
-            <com.project.ianime.widget.AnimeEditText
+            <com.project.ianime.core.ui.widget.AnimeEditText
                 android:id="@+id/manage_status"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="wrap_content"
@@ -202,7 +202,7 @@
                     android:inputType="none"
                     app:simpleItems="@array/status_selector" />
 
-            </com.project.ianime.widget.AnimeEditText>
+            </com.project.ianime.core.ui.widget.AnimeEditText>
 
         </LinearLayout>
 
