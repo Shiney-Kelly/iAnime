@@ -7,27 +7,36 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 enum class AnimeGenreApiModel(@StringRes val label: Int) {
+    @SerialName("LEGEND")
+    LEGEND(R.string.genre_legend),
+
+    @SerialName("HOT_BLOODED")
+    HOT_BLOODED(R.string.genre_hot_blooded),
+
+    @SerialName("ACTION")
+    ACTION(R.string.genre_action),
+
     @SerialName("ADVENTURE")
     ADVENTURE(R.string.genre_adventure),
 
-    @SerialName("LOVE")
-    LOVE(R.string.genre_love),
+    @SerialName("COMEDY")
+    COMEDY(R.string.genre_comedy),
 
-    @SerialName("SCHOOL")
-    SCHOOL(R.string.genre_school),
+    @SerialName("DRAMA")
+    DRAMA(R.string.genre_drama),
 
-    @SerialName("ENERGY")
-    ENERGY(R.string.genre_energy),
-
-    @SerialName("SCI-FI")
-    SCI_FI(R.string.genre_sci),
+    @SerialName("FANTASY")
+    FANTASY(R.string.genre_fantasy),
 
     @SerialName("MYSTERY")
     MYSTERY(R.string.genre_mystery),
 
-    @SerialName("LIFE")
-    LIFE(R.string.genre_life),
+    @SerialName("ROMANCE")
+    ROMANCE(R.string.genre_romance),
 
-    @SerialName("LEGEND")
-    LEGEND(R.string.genre_legend);
+    @SerialName("SCI_FI")
+    SCI_FI(R.string.genre_sci_fi),
+
+    @SerialName("SLICE_OF_LIFE")
+    SLICE_OF_LIFE(R.string.genre_slice_of_life);
 }
