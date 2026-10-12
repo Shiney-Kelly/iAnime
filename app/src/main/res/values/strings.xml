@@ -1,13 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- App Default -->
     <string name="app_name">iAnime</string>
-    <string name="nav_home_title">Gallery</string>
-    <string name="nav_user_title">Mine</string>
     <string name="setting_chinese">CN</string>
     <string name="setting_english">EN</string>
     <string name="change_zh_message">App language changed to Chinese</string>
     <string name="change_en_message">App language changed to English</string>
-    <string name="user_screen_title" translatable="false">COMING SOON...</string>
 
     <!-- Anime Detail Screen -->
     <string name="intro_header_title">About</string>

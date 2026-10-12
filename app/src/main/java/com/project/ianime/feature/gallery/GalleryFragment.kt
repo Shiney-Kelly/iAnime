@@ -9,10 +9,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.project.ianime.R
 import com.project.ianime.core.data.remote.error.ErrorType
 import com.project.ianime.databinding.FragmentGalleryBinding
 import com.project.ianime.core.ui.root.BaseFragment
 import com.project.ianime.feature.gallery.adapter.AnimeItemAdapter
+import com.project.ianime.feature.manageanime.AddAnimeFragment
 import com.project.ianime.feature.viewanime.AnimeDetailFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -56,6 +58,11 @@ class GalleryFragment : BaseFragment() {
         return binding.root
     }
 
+    override fun updateActionBar(): Boolean {
+        actionBarService.setTitle(getString(R.string.app_name), binding.topAppBar.toolBar)
+        return true
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -64,6 +71,10 @@ class GalleryFragment : BaseFragment() {
         // set up refresh listener
         refreshAction.setOnRefreshListener {
             animeViewModel.getAnimeList()
+        }
+
+        binding.buttonAddAnime.setOnClickListener {
+            appNavigation.showFragmentReplaceTop(AddAnimeFragment(), baseContainerId)
         }
     }
 
