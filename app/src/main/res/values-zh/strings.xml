@@ -2,8 +2,6 @@
 <resources>
     <!-- App Default -->
     <string name="app_name">爱动画</string>
-    <string name="nav_home_title">漫厅</string>
-    <string name="nav_user_title">我的</string>
     <string name="setting_chinese">中文</string>
     <string name="setting_english">英文</string>
     <string name="change_zh_message">切换中文成功</string>
