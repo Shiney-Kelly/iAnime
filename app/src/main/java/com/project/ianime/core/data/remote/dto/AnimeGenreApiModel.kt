@@ -1,42 +1,55 @@
 package com.project.ianime.core.data.remote.dto
 
-import androidx.annotation.StringRes
-import com.project.ianime.R
+import com.project.ianime.core.model.Genre
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-enum class AnimeGenreApiModel(@StringRes val label: Int) {
+enum class AnimeGenreApiModel {
     @SerialName("LEGEND")
-    LEGEND(R.string.genre_legend),
+    LEGEND,
 
     @SerialName("HOT_BLOODED")
-    HOT_BLOODED(R.string.genre_hot_blooded),
+    HOT_BLOODED,
 
     @SerialName("ACTION")
-    ACTION(R.string.genre_action),
+    ACTION,
 
     @SerialName("ADVENTURE")
-    ADVENTURE(R.string.genre_adventure),
+    ADVENTURE,
 
     @SerialName("COMEDY")
-    COMEDY(R.string.genre_comedy),
+    COMEDY,
 
     @SerialName("DRAMA")
-    DRAMA(R.string.genre_drama),
+    DRAMA,
 
     @SerialName("FANTASY")
-    FANTASY(R.string.genre_fantasy),
+    FANTASY,
 
     @SerialName("MYSTERY")
-    MYSTERY(R.string.genre_mystery),
+    MYSTERY,
 
     @SerialName("ROMANCE")
-    ROMANCE(R.string.genre_romance),
+    ROMANCE,
 
     @SerialName("SCI_FI")
-    SCI_FI(R.string.genre_sci_fi),
+    SCI_FI,
 
     @SerialName("SLICE_OF_LIFE")
-    SLICE_OF_LIFE(R.string.genre_slice_of_life);
+    SLICE_OF_LIFE;
+}
+
+fun AnimeGenreApiModel.mapToGenre(): Genre = when (this) {
+    AnimeGenreApiModel.LEGEND -> Genre.LEGEND
+    AnimeGenreApiModel.HOT_BLOODED -> Genre.HOT_BLOODED
+    AnimeGenreApiModel.ACTION -> Genre.ACTION
+    AnimeGenreApiModel.ADVENTURE -> Genre.ADVENTURE
+    AnimeGenreApiModel.COMEDY -> Genre.COMEDY
+    AnimeGenreApiModel.DRAMA -> Genre.DRAMA
+    AnimeGenreApiModel.FANTASY -> Genre.FANTASY
+    AnimeGenreApiModel.MYSTERY -> Genre.MYSTERY
+    AnimeGenreApiModel.ROMANCE -> Genre.ROMANCE
+    AnimeGenreApiModel.SCI_FI -> Genre.SCI_FI
+    AnimeGenreApiModel.SLICE_OF_LIFE -> Genre.SLICE_OF_LIFE
 }

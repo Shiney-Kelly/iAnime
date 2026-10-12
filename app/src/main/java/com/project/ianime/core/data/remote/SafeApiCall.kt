@@ -1,11 +1,7 @@
 package com.project.ianime.core.data.remote
 
-import com.project.ianime.core.data.remote.error.BadRequestException
-import com.project.ianime.core.data.remote.error.ConnectionException
-import com.project.ianime.core.data.remote.error.ContentOverSizeException
 import com.project.ianime.core.data.remote.error.HttpStatus
-import com.project.ianime.core.data.remote.error.NotFoundException
-import com.project.ianime.core.data.remote.error.UnauthorizedException
+import com.project.ianime.core.data.remote.error.NetworkException
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -17,13 +13,13 @@ suspend fun <T> safeApiCall(call: suspend () -> T): T =
         call()
     } catch (e: HttpException) {
         throw when (e.code()) {
-            HttpStatus.BAD_REQUEST -> BadRequestException(e.message())
-            HttpStatus.UNAUTHORIZED -> UnauthorizedException(e.message())
-            HttpStatus.NOT_FOUND -> NotFoundException(e.message())
-            HttpStatus.CONTENT_OVERSIZE -> ContentOverSizeException(e.message())
-            in 500..599 -> ConnectionException(e.message())
+            HttpStatus.BAD_REQUEST -> NetworkException.BadRequest(e.message())
+            HttpStatus.UNAUTHORIZED -> NetworkException.Unauthorized(e.message())
+            HttpStatus.NOT_FOUND -> NetworkException.NotFound(e.message())
+            HttpStatus.CONTENT_OVERSIZE -> NetworkException.ContentOversize(e.message())
+            in 500..599 -> NetworkException.Connection(e.message())
             else -> e
         }
     } catch (e: IOException) {
-        throw ConnectionException(e.message)
+        throw NetworkException.Connection(e.message)
     }
