@@ -30,8 +30,9 @@
     <string name="genre_sci">科幻</string>
     <string name="genre_mystery">悬疑</string>
     <string name="genre_life">日常</string>
-    <string name="status_finish">完结</string>
-    <string name="status_in_progress">更新</string>
+    <string name="status_completed">看过</string>
+    <string name="status_in_progress">在看</string>
+    <string name="status_not_started">想看</string>
 
     <!-- Manage Anime Screen -->
     <string name="add_anime_title">添加动漫</string>

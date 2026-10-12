@@ -3,7 +3,7 @@ package com.project.ianime.navigation
 import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import com.project.ianime.root.BaseFragment
+import com.project.ianime.core.ui.root.BaseFragment
 
 class AppNavigationImpl(private val fragmentManager: FragmentManager) : AppNavigation, AppNavigationLifecycle {
 
