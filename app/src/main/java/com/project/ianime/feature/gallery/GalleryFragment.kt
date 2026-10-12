@@ -6,6 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -17,6 +20,7 @@ import com.project.ianime.feature.gallery.adapter.AnimeItemAdapter
 import com.project.ianime.feature.manageanime.AddAnimeFragment
 import com.project.ianime.feature.viewanime.AnimeDetailFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 /**
  * Gallery screen which shows all the anime in preview mode
@@ -46,12 +50,16 @@ class GalleryFragment : BaseFragment() {
         loadingBar = binding.loadingBar
 
         // observe the change of the state of the screen to show empty, success and error screen
-        animeViewModel.animeUiState.observe(viewLifecycleOwner) { uiState ->
-            when (uiState) {
-                AnimeUiState.Loading -> showLoadingScreen()
-                AnimeUiState.Empty -> showEmptyScreen()
-                is AnimeUiState.Error -> showErrorScreen(uiState.errorType)
-                AnimeUiState.Success -> showAnimeGallery()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                animeViewModel.uiState.collect { uiState ->
+                    when (uiState) {
+                        GalleryUiState.Loading -> showLoadingScreen()
+                        GalleryUiState.Empty -> showEmptyScreen()
+                        is GalleryUiState.Error -> showErrorScreen(uiState.errorType)
+                        is GalleryUiState.Loaded -> showAnimeGallery()
+                    }
+                }
             }
         }
 

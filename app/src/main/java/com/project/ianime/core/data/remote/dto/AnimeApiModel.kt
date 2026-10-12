@@ -1,5 +1,7 @@
 package com.project.ianime.core.data.remote.dto
 
+import android.annotation.SuppressLint
+import com.project.ianime.core.model.GalleryItem
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -11,11 +13,32 @@ data class AnimeApiModel(
     @SerialName("anime_id") val animeId: String,
     @SerialName("anime_en_name") val animeEnName: String,
     @SerialName("anime_ch_name") val animeChName: String,
-    @SerialName("rate") val rate: Float,
+    @SerialName("rate") val rate: Double,
     @SerialName("watching_status") val watchingStatus: AnimeWatchingStatusApiModel,
     // could belong to 1 or more genre
     @SerialName("genre") val genres: List<AnimeGenreApiModel>,
     @SerialName("release_year") val releaseYear: String? = null,
     @SerialName("synopsis") val synopsis: String? = null,
     @SerialName("cover_url") val animeImageUrl: String? = null
-)
+) {
+    fun mapToGalleryItem(): GalleryItem {
+        val formattedRate = formattedRate(rate)
+        val genreList = genres.map {
+            it.mapToGenre()
+        }
+
+        return GalleryItem(
+            animeEnName = animeEnName,
+            animeChName = animeChName,
+            watchStatus = watchingStatus.mapToWatchStatus(),
+            year = releaseYear.orEmpty(),
+            rate = formattedRate,
+            genreList = genreList
+        )
+    }
+
+    @SuppressLint("DefaultLocale")
+    private fun formattedRate(rate: Double): String {
+        return String.format("%.1f", rate)
+    }
+}
