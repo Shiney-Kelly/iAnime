@@ -2,7 +2,6 @@ package com.project.ianime.core.di
 
 import com.project.ianime.BuildConfig
 import com.project.ianime.core.data.remote.api.AnimeApi
-import com.project.ianime.api.ApiInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,9 +24,8 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun providesOkHttpClient(apiInterceptor: ApiInterceptor): OkHttpClient =
+    fun providesOkHttpClient(): OkHttpClient =
         OkHttpClient.Builder()
-            .addInterceptor(apiInterceptor)
             .build()
 
     @Provides
