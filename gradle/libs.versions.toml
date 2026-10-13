@@ -37,6 +37,9 @@ rxandroid = "3.0.2"
 picasso = "2.71828"
 coil = "3.6.2"
 
+# --- Kotlin ----------------------------------------------------------------
+kotlinxCollectionsImmutable = "0.5.2"
+
 # --- Test ------------------------------------------------------------------
 junit = "4.13.2"
 androidxJunit = "1.3.0"
@@ -97,6 +100,9 @@ rxandroid = { module = "io.reactivex.rxjava3:rxandroid", version.ref = "rxandroi
 picasso = { module = "com.squareup.picasso:picasso", version.ref = "picasso" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+
+# --- Kotlin ----------------------------------------------------------------
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 
 # --- Test ------------------------------------------------------------------
 junit = { module = "junit:junit", version.ref = "junit" }

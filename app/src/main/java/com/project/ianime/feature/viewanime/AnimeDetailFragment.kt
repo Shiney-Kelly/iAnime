@@ -12,14 +12,11 @@ import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.activityViewModels
 import com.project.ianime.R
-import com.project.ianime.core.data.remote.dto.AnimeApiModel
-import com.project.ianime.core.data.remote.dto.mapToGenre
-import com.project.ianime.core.data.remote.dto.mapToWatchStatus
-import com.project.ianime.databinding.FragmentAnimeBinding
+import com.project.ianime.core.model.GalleryItem
 import com.project.ianime.core.ui.root.BaseFragment
+import com.project.ianime.databinding.FragmentAnimeBinding
+import com.project.ianime.feature.gallery.GalleryViewModel
 import com.project.ianime.feature.manageanime.EditAnimeFragment
-import com.project.ianime.utils.image.ImageUtils
-import com.project.ianime.feature.gallery.AnimeViewModel
 import com.project.ianime.utils.Constants
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -30,12 +27,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class AnimeDetailFragment : BaseFragment() {
     private var _binding: FragmentAnimeBinding? = null
     private val binding get() = _binding!!
-
-    private val imageUtils: ImageUtils by lazy {
-        ImageUtils()
-    }
-
-    private val animeViewModel: AnimeViewModel by activityViewModels()
+    private val galleryViewModel: GalleryViewModel by activityViewModels()
 
     private lateinit var animeTargetId: String
 
@@ -85,7 +77,7 @@ class AnimeDetailFragment : BaseFragment() {
     }
 
     private fun loadAnimeDetails() {
-        animeViewModel.getAnimeById(animeTargetId) { targetAnime ->
+        galleryViewModel.getAnimeById(animeTargetId) { targetAnime ->
             targetAnime?.let {
                 showAnimeDetailScreen(it)
             } ?: run {
@@ -114,7 +106,7 @@ class AnimeDetailFragment : BaseFragment() {
         }
     }
 
-    private fun showAnimeDetailScreen(targetAnime: AnimeApiModel){
+    private fun showAnimeDetailScreen(targetAnime: GalleryItem){
         // update UI state
         binding.animeScreenContainer.visibility= View.VISIBLE
         binding.animeNotFoundContainer.root.visibility= View.GONE
@@ -130,15 +122,12 @@ class AnimeDetailFragment : BaseFragment() {
 
         // load data details
         animeName.text = animeTitle
-        targetAnime.animeImageUrl?.let {
-            imageUtils.loadImageFromDisk(it, animeProfile)
-        }
-        val genres = targetAnime.genres.joinToString(", ") { getString(it.mapToGenre().label) }
+        val genres = targetAnime.genreList.joinToString(", ") { getString(it.label) }
         animeType.text = getString(R.string.anime_type_title, genres)
-        val releaseYear = targetAnime.releaseYear ?: getString(R.string.not_applicable_data)
+        val releaseYear = targetAnime.year ?: getString(R.string.not_applicable_data)
         animeReleasedYear.text = getString(R.string.anime_release_year_title, releaseYear)
-        animeStatus.text = getString(R.string.anime_status_title, getString(targetAnime.watchingStatus.mapToWatchStatus().label))
-        val animeDescription: String = targetAnime.synopsis ?: getString(R.string.empty_description_message)
+        animeStatus.text = getString(R.string.anime_status_title, getString(targetAnime.watchStatus.label))
+        val animeDescription: String =  getString(R.string.empty_description_message)
         animeIntro.text = animeDescription
     }
 

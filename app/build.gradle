@@ -59,6 +59,9 @@ dependencies {
     implementation libs.androidx.fragment.ktx
     implementation libs.bundles.lifecycle
 
+    // Kotlin
+    implementation libs.kotlinx.collections.immutable
+
     // Compose
     implementation platform(libs.androidx.compose.bom)
     implementation libs.bundles.compose

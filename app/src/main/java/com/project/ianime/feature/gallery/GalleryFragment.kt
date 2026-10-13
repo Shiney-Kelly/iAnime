@@ -32,7 +32,7 @@ class GalleryFragment : BaseFragment() {
     private var _binding: FragmentGalleryBinding? = null
     private val binding get() = _binding!!
 
-    private val animeViewModel: AnimeViewModel by activityViewModels()
+    private val galleryViewModel: GalleryViewModel by activityViewModels()
 
     lateinit var animeCardList: RecyclerView
     lateinit var refreshAction: SwipeRefreshLayout
@@ -67,7 +67,7 @@ class GalleryFragment : BaseFragment() {
         // observe the change of the state of the screen to show empty, success and error screen
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                animeViewModel.uiState.collect { uiState ->
+                galleryViewModel.uiState.collect { uiState ->
                     when (uiState) {
                         GalleryUiState.Loading -> showLoadingScreen()
                         GalleryUiState.Empty -> showEmptyScreen()
@@ -80,7 +80,7 @@ class GalleryFragment : BaseFragment() {
 
         // set up refresh listener
         refreshAction.setOnRefreshListener {
-            animeViewModel.getAnimeList()
+            galleryViewModel.getAnimeList()
         }
 
         binding.buttonAddAnime.setOnClickListener {
