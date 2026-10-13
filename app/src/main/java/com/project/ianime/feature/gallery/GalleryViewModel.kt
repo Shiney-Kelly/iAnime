@@ -2,10 +2,11 @@ package com.project.ianime.feature.gallery
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.project.ianime.core.data.remote.dto.AnimeApiModel
 import com.project.ianime.core.data.remote.error.toErrorType
 import com.project.ianime.core.data.repository.AnimeRepository
+import com.project.ianime.core.model.GalleryItem
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,11 +14,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AnimeViewModel @Inject constructor(
+class GalleryViewModel @Inject constructor(
     private val repository: AnimeRepository
 ) : ViewModel() {
 
-    private var rawAnimeList: List<AnimeApiModel> = emptyList()
+    private var rawAnimeList: List<GalleryItem> = emptyList()
 
     private val _uiState = MutableStateFlow<GalleryUiState>(GalleryUiState.Loading)
     val uiState = _uiState.asStateFlow()
@@ -48,8 +49,7 @@ class AnimeViewModel @Inject constructor(
                     _uiState.value = GalleryUiState.Empty
                 } else {
                     _uiState.value = GalleryUiState.Loaded(
-                        // TODO: should be mapped in repository instead
-                        animeList = rawAnimeListData.map { it.mapToGalleryItem() }
+                        animeList = rawAnimeListData.toImmutableList()
                     )
                 }
             } catch (e: Exception){
@@ -63,7 +63,7 @@ class AnimeViewModel @Inject constructor(
      * get an anime with specific id
      * @param animeTargetId - anime target id
      */
-    fun getAnimeById(animeTargetId: String, callback: (AnimeApiModel?) -> Unit) {
+    fun getAnimeById(animeTargetId: String, callback: (GalleryItem?) -> Unit) {
         callback(rawAnimeList.find { it.animeId == animeTargetId })
     }
 }
