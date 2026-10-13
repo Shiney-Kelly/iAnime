@@ -31,8 +31,9 @@
     <string name="genre_sci">Sci-fi</string>
     <string name="genre_mystery">Mystery</string>
     <string name="genre_life">Life</string>
-    <string name="status_finish">Finished</string>
-    <string name="status_in_progress">In Progress</string>
+    <string name="status_completed">Completed</string>
+    <string name="status_in_progress">Watching</string>
+    <string name="status_not_started">Plan to Watch</string>
 
     <!-- Manage Anime Screen -->
     <string name="add_anime_title">Add Anime</string>

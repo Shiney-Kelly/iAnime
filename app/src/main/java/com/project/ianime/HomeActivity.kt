@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import com.project.ianime.root.BaseContainerActivity
-import com.project.ianime.screens.home.HomeFragment
+import com.project.ianime.core.ui.root.BaseContainerActivity
+import com.project.ianime.feature.home.HomeFragment
 import com.project.ianime.utils.Constants
 import com.project.ianime.utils.updateLanguageSetting
 import dagger.hilt.android.AndroidEntryPoint
