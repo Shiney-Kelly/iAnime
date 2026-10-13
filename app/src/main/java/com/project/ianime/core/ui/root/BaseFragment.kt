@@ -24,7 +24,6 @@ abstract class BaseFragment : Fragment() {
         )
     }
     val baseContainerId = R.id.container
-    val fragmentContainerId = R.id.fragment_container
 
     override fun onAttach(context: Context) {
         val navigationManagerImpl = AppNavigationImpl(

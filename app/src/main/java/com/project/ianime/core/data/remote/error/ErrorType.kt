@@ -11,3 +11,14 @@ enum class ErrorType(@StringRes val label: Int, @StringRes val message: Int) {
     CONTENT_OVERSIZE(R.string.generic_error_label, R.string.content_oversize_error_message),
     GENERIC(R.string.generic_error_label, R.string.generic_error_message);
 }
+
+fun Throwable.toErrorType(): ErrorType = when (this) {
+    is NetworkException -> when (this) {
+        is NetworkException.BadRequest -> ErrorType.BAD_REQUEST
+        is NetworkException.Unauthorized -> ErrorType.UNAUTHORIZED
+        is NetworkException.NotFound -> ErrorType.NOT_FOUND
+        is NetworkException.ContentOversize -> ErrorType.CONTENT_OVERSIZE
+        is NetworkException.Connection -> ErrorType.CONNECTION
+    }
+    else -> ErrorType.GENERIC
+}

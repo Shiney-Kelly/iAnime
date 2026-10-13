@@ -5,7 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import com.project.ianime.core.ui.root.BaseContainerActivity
-import com.project.ianime.feature.home.HomeFragment
+import com.project.ianime.feature.gallery.GalleryFragment
 import com.project.ianime.utils.Constants
 import com.project.ianime.utils.updateLanguageSetting
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,8 +24,7 @@ class HomeActivity : BaseContainerActivity() {
 
     private fun navigateToHome() {
         supportFragmentManager.beginTransaction()
-            .replace(containerViewHolderId, HomeFragment())
-            .addToBackStack(null)
+            .replace(containerViewHolderId, GalleryFragment())
             .commit()
     }
 

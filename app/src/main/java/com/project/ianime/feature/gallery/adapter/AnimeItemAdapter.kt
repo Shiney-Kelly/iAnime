@@ -5,16 +5,16 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.project.ianime.R
-import com.project.ianime.core.data.remote.dto.AnimeApiModel
+import com.project.ianime.core.model.GalleryItem
 
 class AnimeItemAdapter(
     private val clickHandler: (String) -> Unit
 ) : RecyclerView.Adapter<AnimeItemViewHolder>() {
 
-    private var animeList = mutableListOf<AnimeApiModel>()
+    private var animeList = mutableListOf<GalleryItem>()
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setAnimeList(animeData: List<AnimeApiModel>) {
+    fun setAnimeList(animeData: List<GalleryItem>) {
         this.animeList = animeData.toMutableList()
         notifyDataSetChanged()
     }

@@ -68,13 +68,6 @@
                         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                         tools:text="Type: God" />
 
-                    <TextView
-                        android:id="@+id/anime_country"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginVertical="@dimen/spacing_8dp"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                        tools:text="Country: China" />
 
                     <TextView
                         android:id="@+id/anime_year"

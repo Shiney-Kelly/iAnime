@@ -1,18 +1,23 @@
 package com.project.ianime.core.data.remote.dto
 
-import androidx.annotation.StringRes
-import com.project.ianime.R
+import com.project.ianime.core.model.WatchStatus
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-enum class AnimeWatchingStatusApiModel(@StringRes val label: Int) {
+enum class AnimeWatchingStatusApiModel {
     @SerialName("COMPLETED")
-    COMPLETED(R.string.status_completed),
+    COMPLETED,
 
     @SerialName("IN_PROGRESS")
-    IN_PROGRESS(R.string.status_in_progress),
+    IN_PROGRESS,
 
     @SerialName("NOT_STARTED")
-    NOT_STARTED(R.string.status_not_started);
+    NOT_STARTED;
+}
+
+fun AnimeWatchingStatusApiModel.mapToWatchStatus(): WatchStatus = when (this) {
+    AnimeWatchingStatusApiModel.NOT_STARTED -> WatchStatus.PLAN
+    AnimeWatchingStatusApiModel.IN_PROGRESS -> WatchStatus.WATCHING
+    AnimeWatchingStatusApiModel.COMPLETED -> WatchStatus.DONE
 }
