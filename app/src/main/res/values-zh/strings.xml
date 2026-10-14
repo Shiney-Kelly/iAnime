@@ -34,6 +34,10 @@
     <string name="status_in_progress">在看</string>
     <string name="status_not_started">想看</string>
 
+    <!-- Gallery Screen -->
+    <string name="gallery_title_prefix">我的</string>
+    <string name="gallery_title_highlight">收藏</string>
+
     <!-- Manage Anime Screen -->
     <string name="add_anime_title">添加动漫</string>
     <string name="edit_anime_title">编辑动漫</string>
