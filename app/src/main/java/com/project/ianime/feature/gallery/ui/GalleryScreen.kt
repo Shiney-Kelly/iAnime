@@ -19,32 +19,43 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.shadow.Shadow as DropShadow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineHeightStyle
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.project.ianime.R
 import com.project.ianime.core.model.GalleryItem
+import com.project.ianime.core.model.WatchStatus
+import com.project.ianime.core.model.mapToStatusColor
 import com.project.ianime.core.ui.theme.Accent
+import com.project.ianime.core.ui.theme.BadgeText
+import com.project.ianime.core.ui.theme.CardBackground
+import com.project.ianime.core.ui.theme.CardShadow
 import com.project.ianime.core.ui.theme.CoverInitial
 import com.project.ianime.core.ui.theme.CoverInitialShadow
 import com.project.ianime.core.ui.theme.Ink
 import com.project.ianime.core.ui.theme.Muted
-import com.project.ianime.core.ui.theme.coverBrush
+import com.project.ianime.core.ui.theme.Padding
+import com.project.ianime.core.ui.theme.Pop
+import com.project.ianime.feature.gallery.GalleryUiState
 import com.project.ianime.feature.gallery.GalleryViewModel
 
 @Composable
@@ -52,11 +63,19 @@ fun GalleryScreen(
     modifier: Modifier = Modifier,
     viewModel: GalleryViewModel = viewModel()
 ) {
-    val state = viewModel.uiState.collectAsStateWithLifecycle()
-    Column(modifier = modifier
-        .padding(horizontal = 8.dp)
-        .fillMaxSize()) {
-
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    Column(modifier = modifier.fillMaxSize()) {
+        when (val uiState = state) {
+            GalleryUiState.Empty -> {}
+            GalleryUiState.Loading -> {}
+            is GalleryUiState.Error -> {}
+            is GalleryUiState.Loaded -> {
+                val count = uiState.animeList.size.toString()
+                GalleryTitle()
+                CountLine(shownCounts = count, totalCounts = count)
+                GalleryList(galleryLists = uiState.animeList)
+            }
+        }
     }
 }
 
@@ -66,10 +85,10 @@ fun GalleryTitle(
 ) {
     Row(
         modifier = modifier
-            .padding(top = 8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(start = Padding.Large, top = Padding.Small, end = Padding.Large),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(Padding.Small)
     ) {
         Text(
             text = stringResource(id = R.string.gallery_title_prefix),
@@ -102,42 +121,32 @@ fun CountLine(
     shownCounts: String,
     totalCounts: String,
 ) {
-    Box(
+    Text(
         modifier = modifier
-            .padding(top = 8.dp)
-            .fillMaxWidth(),
-    ) {
-        Text(
-            text = "$shownCounts of $totalCounts titles",
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Medium,
-            color = Muted
-        )
-    }
+            .fillMaxWidth()
+            .padding(start = Padding.Large, top = Padding.Small, end = Padding.Large),
+        text = "$shownCounts of $totalCounts titles",
+        style = MaterialTheme.typography.bodyMedium,
+        fontSize = 15.sp,
+        fontWeight = FontWeight.Medium,
+        color = Muted
+    )
 }
 
 @Composable
 fun GalleryList(
-    modifier: Modifier = Modifier,
     galleryLists: List<GalleryItem>
 ) {
+    val context = LocalContext.current
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        contentPadding = PaddingValues(horizontal = Padding.Large, vertical = Padding.Small),
+        verticalArrangement = Arrangement.spacedBy(Padding.Medium),
+        horizontalArrangement = Arrangement.spacedBy(Padding.Medium)
     ) {
-        items(galleryLists, key = {it.animeId}) { item ->
-            val colorBrush = remember(item.animeId) { coverBrush(item.animeId) }
-            GalleryItemUi(
-                animeTitle = item.displayName(),
-                animeSubTitle = item.displaySubtitle(),
-                status = stringResource(item.watchStatus.label),
-                // TODO map the status with the color
-                statusBackgroundColor = Color.White,
-                rate = item.rate,
-                coverBrush = colorBrush,
-            )
+        items(galleryLists, key = { it.animeId }) { item ->
+            val card = remember(item, context) { item.toCardUi(context) }
+            GalleryItemUi(card = card)
         }
     }
 }
@@ -145,42 +154,61 @@ fun GalleryList(
 @Composable
 fun GalleryItemUi(
     modifier: Modifier = Modifier,
-    animeTitle: String,
-    animeSubTitle: String,
-    status: String,
-    statusBackgroundColor: Color,
-    rate: String,
-    // random generated card background later to use anime image url
-    coverBrush: Brush,
+    card: GalleryCardUi,
 ) {
+    val cardShape = RoundedCornerShape(24.dp)
     Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .dropShadow(
+                shape = cardShape,
+                shadow = DropShadow(
+                    radius = 22.dp,
+                    color = CardShadow,
+                    offset = DpOffset(x = 0.dp, y = 8.dp)
+                )
+            ),
+        shape = cardShape,
         colors = CardDefaults.cardColors(
-            containerColor = Color.White,
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 6.dp
+            containerColor = CardBackground,
         ),
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
+        Column {
             GalleryItemCoverUi(
-                status = status,
-                statusBackgroundColor = statusBackgroundColor,
-                rate = rate,
-                coverBrush = coverBrush,
-                centerText = animeTitle.trim().firstOrNull()?.uppercase().orEmpty()
+                watchStatus = card.watchStatus,
+                rate = card.rate,
+                coverBrush = card.coverBrush,
+                centerText = card.letter
             )
             Text(
-                text = animeTitle,
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold
+                modifier = Modifier.padding(
+                    start = Padding.Medium,
+                    top = Padding.CardTitleTop,
+                    end = Padding.Medium
+                ),
+                text = card.title,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = TextStyle(
+                    color = Ink,
+                    fontSize = 16.sp,
+                    lineHeight = 22.4.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
             )
             Text(
-                text = animeSubTitle,
-                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(
+                    start = Padding.Medium,
+                    top = Padding.XSmall,
+                    end = Padding.Medium,
+                    bottom = Padding.Medium
+                ),
+                text = card.subtitle,
+                style = TextStyle(
+                    color = Muted,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium
+                )
             )
         }
     }
@@ -189,30 +217,33 @@ fun GalleryItemUi(
 @Composable
 fun GalleryItemCoverUi(
     modifier: Modifier = Modifier,
-    status: String,
-    statusBackgroundColor: Color,
+    watchStatus: WatchStatus,
     rate: String,
     // random generated card background later to use anime image url
     coverBrush: Brush,
     centerText: String,
 ) {
-
+    val isRattingBadgeHidden = watchStatus == WatchStatus.PLAN
     Box(
         modifier = modifier
-            .padding(8.dp)
-            .background(brush = coverBrush, RoundedCornerShape(18.dp))
+            .padding(start = Padding.Small, top = Padding.Small, end = Padding.Small)
             .fillMaxWidth()
             .aspectRatio(3f / 4f)
+            .background(brush = coverBrush, RoundedCornerShape(18.dp))
     ) {
-        StatusBadge(
-            modifier = Modifier.align(Alignment.TopStart),
-            status = status,
-            backgroundColor = statusBackgroundColor,
-        )
-        RateBadge(
-            modifier = Modifier.align(Alignment.TopEnd),
-            rate = rate
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(Padding.Small)
+                .align(Alignment.TopStart),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            StatusBadge(watchStatus = watchStatus)
+            RateBadge(
+                rate = rate,
+                isHidden = isRattingBadgeHidden
+            )
+        }
         CoverLetter(
             modifier = Modifier.align(Alignment.Center),
             letter = centerText
@@ -256,20 +287,24 @@ fun CoverLetter(
 @Composable
 fun StatusBadge(
     modifier: Modifier = Modifier,
-    backgroundColor: Color,
-    status: String,
+    watchStatus: WatchStatus,
 ) {
     Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
+        modifier = modifier,
+        shape = RoundedCornerShape(50),
         colors = CardDefaults.cardColors(
-            containerColor = backgroundColor,
+            containerColor = watchStatus.mapToStatusColor(),
         ),
     ) {
         Text(
-            text = status,
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold
+            modifier = Modifier.padding(horizontal = Padding.Small, vertical = Padding.XSmall),
+            text = stringResource(watchStatus.label),
+            style = TextStyle(
+                color = BadgeText,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.ExtraBold,
+                letterSpacing = 0.22.sp
+            )
         )
     }
 }
@@ -278,29 +313,36 @@ fun StatusBadge(
 fun RateBadge(
     modifier: Modifier = Modifier,
     rate: String,
+    isHidden: Boolean
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFFFD66B),
-        ),
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(2.dp),
-            verticalAlignment = Alignment.CenterVertically
+    if (!isHidden) {
+        Card(
+            modifier = modifier,
+            shape = RoundedCornerShape(50),
+            colors = CardDefaults.cardColors(
+                containerColor = Pop,
+            ),
         ) {
+            Row(
+                modifier = Modifier.padding(horizontal = Padding.Small, vertical = Padding.XSmall),
+                horizontalArrangement = Arrangement.spacedBy(Padding.XXSmall),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 //            Icon(
 //                modifier = Modifier.size(8.dp),
 //                painter = painterResource(id = ),
 //                contentDescription = null,
 //                tint = Ink
 //            )
-            Text(
-                text = rate,
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold
-            )
+                Text(
+                    text = rate,
+                    style = TextStyle(
+                        color = BadgeText,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                )
+            }
         }
     }
 }
