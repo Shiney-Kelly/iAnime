@@ -7,10 +7,13 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,8 +22,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -30,6 +35,7 @@ import com.project.ianime.core.ui.theme.Accent
 import com.project.ianime.core.ui.theme.Ink
 import com.project.ianime.core.ui.theme.Muted
 import com.project.ianime.core.ui.theme.Padding
+import com.project.ianime.core.ui.theme.Pop
 import com.project.ianime.feature.gallery.GalleryUiState
 import com.project.ianime.feature.gallery.GalleryViewModel
 
@@ -80,12 +86,12 @@ fun GalleryTitle(
                 fontWeight = FontWeight.Bold
             )
 
-//            Icon(
-//                modifier = Modifier.align(Alignment.TopEnd).offset(x = 10.dp, y = (-4).dp).size(16.dp),
-//                painter = painterResource(id = ),
-//                contentDescription = null,
-//                tint = Pop
-//            )
+            Icon(
+                modifier = Modifier.align(Alignment.TopEnd).offset(x = 10.dp, y = (-4).dp).size(16.dp),
+                painter = painterResource(id = R.drawable.title_sparkle),
+                contentDescription = null,
+                tint = Pop
+            )
         }
     }
 }
