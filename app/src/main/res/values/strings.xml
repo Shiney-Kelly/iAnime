@@ -34,6 +34,10 @@
     <string name="status_in_progress">Watching</string>
     <string name="status_not_started">Plan to Watch</string>
 
+    <!-- Gallery Screen -->
+    <string name="gallery_title_prefix">My</string>
+    <string name="gallery_title_highlight">collection</string>
+
     <!-- Manage Anime Screen -->
     <string name="add_anime_title">Add Anime</string>
     <string name="edit_anime_title">Edit Anime</string>
