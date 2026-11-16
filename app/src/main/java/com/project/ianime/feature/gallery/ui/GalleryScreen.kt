@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,6 +36,7 @@ import com.project.ianime.core.model.GalleryItem
 import com.project.ianime.core.ui.theme.Accent
 import com.project.ianime.core.ui.theme.Ink
 import com.project.ianime.core.ui.theme.Muted
+import com.project.ianime.core.ui.theme.OnAccent
 import com.project.ianime.core.ui.theme.Padding
 import com.project.ianime.core.ui.theme.Pop
 import com.project.ianime.feature.gallery.GalleryUiState
@@ -47,21 +50,49 @@ fun GalleryScreen(
     onAddAnimeClick: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    Column(modifier = modifier.fillMaxSize()) {
-        when (val uiState = state) {
-            GalleryUiState.Empty -> {}
-            GalleryUiState.Loading -> {}
-            is GalleryUiState.Error -> {}
-            is GalleryUiState.Loaded -> {
-                val count = uiState.animeList.size.toString()
-                GalleryTitle()
-                CountLine(shownCounts = count, totalCounts = count)
-                GalleryList(
-                    galleryLists = uiState.animeList,
-                    onItemClick = onAnimeClick
-                )
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            when (val uiState = state) {
+                GalleryUiState.Empty -> {}
+                GalleryUiState.Loading -> {}
+                is GalleryUiState.Error -> {}
+                is GalleryUiState.Loaded -> {
+                    val count = uiState.animeList.size.toString()
+                    GalleryTitle()
+                    CountLine(shownCounts = count, totalCounts = count)
+                    GalleryList(
+                        galleryLists = uiState.animeList,
+                        onItemClick = onAnimeClick
+                    )
+                }
             }
         }
+        AddAnimeFab(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = 20.dp, bottom = 24.dp),
+            onClick = onAddAnimeClick
+        )
+    }
+}
+
+@Composable
+fun AddAnimeFab(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    FloatingActionButton(
+        modifier = modifier.size(60.dp),
+        onClick = onClick,
+        shape = RoundedCornerShape(18.dp),
+        containerColor = Accent,
+        contentColor = OnAccent
+    ) {
+        Text(
+            text = stringResource(id = R.string.gallery_add_fab_label),
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Medium
+        )
     }
 }
 
