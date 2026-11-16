@@ -1,5 +1,6 @@
 package com.project.ianime.feature.gallery.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,7 +29,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.project.ianime.R
 import com.project.ianime.core.model.GalleryItem
 import com.project.ianime.core.ui.theme.Accent
@@ -42,7 +42,9 @@ import com.project.ianime.feature.gallery.GalleryViewModel
 @Composable
 fun GalleryScreen(
     modifier: Modifier = Modifier,
-    viewModel: GalleryViewModel = viewModel()
+    viewModel: GalleryViewModel,
+    onAnimeClick: (String) -> Unit,
+    onAddAnimeClick: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     Column(modifier = modifier.fillMaxSize()) {
@@ -54,7 +56,10 @@ fun GalleryScreen(
                 val count = uiState.animeList.size.toString()
                 GalleryTitle()
                 CountLine(shownCounts = count, totalCounts = count)
-                GalleryList(galleryLists = uiState.animeList)
+                GalleryList(
+                    galleryLists = uiState.animeList,
+                    onItemClick = onAnimeClick
+                )
             }
         }
     }
@@ -116,7 +121,8 @@ fun CountLine(
 
 @Composable
 fun GalleryList(
-    galleryLists: List<GalleryItem>
+    galleryLists: List<GalleryItem>,
+    onItemClick: (String) -> Unit,
 ) {
     val context = LocalContext.current
     LazyVerticalGrid(
@@ -127,7 +133,10 @@ fun GalleryList(
     ) {
         items(galleryLists, key = { it.animeId }) { item ->
             val card = remember(item, context) { item.toCardUi(context) }
-            GalleryItemUi(card = card)
+            GalleryItemUi(
+                modifier = Modifier.clickable { onItemClick(item.animeId) },
+                card = card
+            )
         }
     }
 }

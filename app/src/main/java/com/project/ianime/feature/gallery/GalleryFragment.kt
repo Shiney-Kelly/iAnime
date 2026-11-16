@@ -4,152 +4,47 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.project.ianime.R
-import com.project.ianime.core.data.remote.error.ErrorType
-import com.project.ianime.core.model.GalleryItem
-import com.project.ianime.databinding.FragmentGalleryBinding
 import com.project.ianime.core.ui.root.BaseFragment
-import com.project.ianime.feature.gallery.adapter.AnimeItemAdapter
+import com.project.ianime.feature.gallery.ui.GalleryScreen
 import com.project.ianime.feature.manageanime.AddAnimeFragment
 import com.project.ianime.feature.viewanime.AnimeDetailFragment
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
-/**
- * Gallery screen which shows all the anime in preview mode
- */
 @AndroidEntryPoint
 class GalleryFragment : BaseFragment() {
 
-    private var _binding: FragmentGalleryBinding? = null
-    private val binding get() = _binding!!
-
     private val galleryViewModel: GalleryViewModel by activityViewModels()
-
-    lateinit var animeCardList: RecyclerView
-    lateinit var refreshAction: SwipeRefreshLayout
-    lateinit var loadingBar: ProgressBar
-    private lateinit var animeCardAdapter: AnimeItemAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentGalleryBinding.inflate(inflater, container, false)
-
-        // set up UI elements
-        animeCardList = binding.animeListContainer
-        refreshAction = binding.swipeContainer
-        loadingBar = binding.loadingBar
-
-        return binding.root
-    }
-
-    override fun updateActionBar(): Boolean {
-        actionBarService.setTitle(getString(R.string.app_name), binding.topAppBar.toolBar)
-        return true
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        setUpRecyclerView()
-
-        // observe the change of the state of the screen to show empty, success and error screen
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                galleryViewModel.uiState.collect { uiState ->
-                    when (uiState) {
-                        GalleryUiState.Loading -> showLoadingScreen()
-                        GalleryUiState.Empty -> showEmptyScreen()
-                        is GalleryUiState.Error -> showErrorScreen(uiState.errorType)
-                        is GalleryUiState.Loaded -> showAnimeGallery(uiState.animeList)
-                    }
-                }
+    ): View = ComposeView(requireContext()).apply {
+        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        setContent {
+            MaterialTheme {
+                GalleryScreen(
+                    viewModel = galleryViewModel,
+                    onAnimeClick = ::openAnimeDetail,
+                    onAddAnimeClick = ::openAddAnime
+                )
             }
         }
+    }
 
-        // set up refresh listener
-        refreshAction.setOnRefreshListener {
-            galleryViewModel.getAnimeList()
+    private fun openAnimeDetail(animeId: String) {
+        val animeDetailFragment = AnimeDetailFragment().apply {
+            arguments = Bundle().apply { putString(ANIME_ID_PARAM, animeId) }
         }
-
-        binding.buttonAddAnime.setOnClickListener {
-            appNavigation.showFragmentReplaceTop(AddAnimeFragment(), baseContainerId)
-        }
+        appNavigation.showFragmentReplaceTop(animeDetailFragment, baseContainerId)
     }
 
-    /**
-     * set recycler view and load gallery items
-     */
-    private fun showAnimeGallery(animeList: List<GalleryItem>) {
-        animeCardAdapter.setAnimeList(animeList)
-        // update UI state
-        refreshAction.isRefreshing = false
-        binding.errorContainer.root.visibility = View.GONE
-        binding.emptyContainer.root.visibility = View.GONE
-        loadingBar.visibility = View.GONE
-        animeCardList.visibility = View.VISIBLE
-    }
-
-    private fun setUpRecyclerView() {
-        // set recycler view
-        animeCardList.layoutManager = GridLayoutManager(requireContext(), 2)
-        animeCardAdapter = AnimeItemAdapter {
-            // navigate to anime detail screen
-            val bundle = Bundle().apply {
-                putString(ANIME_ID_PARAM, it)
-            }
-            val animeDetailFragment = AnimeDetailFragment()
-            animeDetailFragment.arguments = bundle
-            appNavigation.showFragmentReplaceTop(animeDetailFragment, baseContainerId)
-        }
-        animeCardList.adapter = animeCardAdapter
-    }
-
-    private fun showLoadingScreen(){
-        // update UI state
-        refreshAction.isRefreshing = false
-        binding.errorContainer.root.visibility = View.GONE
-        binding.emptyContainer.root.visibility = View.GONE
-        animeCardList.visibility = View.GONE
-        loadingBar.visibility = View.VISIBLE
-    }
-
-    private fun showErrorScreen(errorType: ErrorType) {
-        // update UI state
-        val errorContainer = binding.errorContainer
-        refreshAction.isRefreshing = false
-        animeCardList.visibility = View.GONE
-        loadingBar.visibility = View.GONE
-        binding.emptyContainer.root.visibility = View.GONE
-        errorContainer.root.visibility = View.VISIBLE
-        errorContainer.errorTitle.text = getString(errorType.label)
-        errorContainer.errorMessage.text = getString(errorType.message)
-    }
-
-    private fun showEmptyScreen() {
-        // update UI state
-        val emptyContainer = binding.emptyContainer
-        refreshAction.isRefreshing = false
-        animeCardList.visibility = View.GONE
-        loadingBar.visibility = View.GONE
-        binding.errorContainer.root.visibility = View.GONE
-        emptyContainer.root.visibility = View.VISIBLE
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun openAddAnime() {
+        appNavigation.showFragmentReplaceTop(AddAnimeFragment(), baseContainerId)
     }
 
     companion object {
