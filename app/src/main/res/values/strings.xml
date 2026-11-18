@@ -37,6 +37,7 @@
     <!-- Gallery Screen -->
     <string name="gallery_title_prefix">My</string>
     <string name="gallery_title_highlight">collection</string>
+    <string name="gallery_add_fab_label">+</string>
 
     <!-- Manage Anime Screen -->
     <string name="add_anime_title">Add Anime</string>
