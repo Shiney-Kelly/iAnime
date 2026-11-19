@@ -38,6 +38,10 @@
     <string name="gallery_title_prefix">我的</string>
     <string name="gallery_title_highlight">收藏</string>
     <string name="gallery_add_fab_label">+</string>
+    <string name="gallery_avatar_initial">K</string>
+    <string name="gallery_wordmark_prefix">i</string>
+    <string name="gallery_wordmark_name">Anime</string>
+    <string name="gallery_count_line">%1$s / %2$s 部作品</string>
 
     <!-- Manage Anime Screen -->
     <string name="add_anime_title">添加动漫</string>

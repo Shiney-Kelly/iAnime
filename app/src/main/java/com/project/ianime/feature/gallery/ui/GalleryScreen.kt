@@ -1,6 +1,8 @@
 package com.project.ianime.feature.gallery.ui
 
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +43,7 @@ import com.project.ianime.core.ui.theme.Padding
 import com.project.ianime.core.ui.theme.Pop
 import com.project.ianime.feature.gallery.GalleryUiState
 import com.project.ianime.feature.gallery.GalleryViewModel
+import com.project.ianime.utils.Constants
 
 @Composable
 fun GalleryScreen(
@@ -48,8 +51,39 @@ fun GalleryScreen(
     viewModel: GalleryViewModel,
     onAnimeClick: (String) -> Unit,
     onAddAnimeClick: () -> Unit,
+    onLanguageClick: () -> Unit,
+    onThemeClick: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val isChinese = AppCompatDelegate.getApplicationLocales()
+        .toLanguageTags()
+        .startsWith(Constants.LANG_ZH)
+    Column(modifier = modifier.fillMaxSize()) {
+        GalleryHeader(
+            languageLabel = stringResource(
+                id = if (isChinese) R.string.setting_english else R.string.setting_chinese
+            ),
+            isDarkMode = isSystemInDarkTheme(),
+            avatarInitial = stringResource(id = R.string.gallery_avatar_initial),
+            onLanguageClick = onLanguageClick,
+            onThemeClick = onThemeClick
+        )
+        GalleryContent(
+            modifier = Modifier.weight(1f),
+            state = state,
+            onAnimeClick = onAnimeClick,
+            onAddAnimeClick = onAddAnimeClick
+        )
+    }
+}
+
+@Composable
+private fun GalleryContent(
+    modifier: Modifier = Modifier,
+    state: GalleryUiState,
+    onAnimeClick: (String) -> Unit,
+    onAddAnimeClick: () -> Unit,
+) {
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             when (val uiState = state) {
@@ -142,7 +176,7 @@ fun CountLine(
         modifier = modifier
             .fillMaxWidth()
             .padding(start = Padding.Large, top = Padding.Small, end = Padding.Large),
-        text = "$shownCounts of $totalCounts titles",
+        text = stringResource(id = R.string.gallery_count_line, shownCounts, totalCounts),
         style = MaterialTheme.typography.bodyMedium,
         fontSize = 15.sp,
         fontWeight = FontWeight.Medium,

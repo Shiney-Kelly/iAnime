@@ -19,3 +19,6 @@ val BadgeText = Color(0xFF3B2A4A)
 val StatusWatching = Color(0xFFC3F2E2)
 val StatusDone = Color(0xFFFFE7A3)
 val StatusPlan = Color(0xFFE7DCFF)
+
+val Background = Color(0xFFF7F5FA)
+val AvatarLetter = Color(0xFF15122B)

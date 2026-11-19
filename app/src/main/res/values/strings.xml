@@ -38,6 +38,10 @@
     <string name="gallery_title_prefix">My</string>
     <string name="gallery_title_highlight">collection</string>
     <string name="gallery_add_fab_label">+</string>
+    <string name="gallery_avatar_initial">K</string>
+    <string name="gallery_wordmark_prefix">i</string>
+    <string name="gallery_wordmark_name">Anime</string>
+    <string name="gallery_count_line">%1$s of %2$s titles</string>
 
     <!-- Manage Anime Screen -->
     <string name="add_anime_title">Add Anime</string>
